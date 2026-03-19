@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Zarządzanie Zamówieniami</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'order_create' %}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-cart-plus"></i> Nowe Zamówienie
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Klient</th>
+                <th>Data utw.</th>
+                <th>Status</th>
+                <th>Wartość</th>
+                <th>Zakupione produkty</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.created_at|date:"d M Y, H:i" }}</td>
+                <td>
+                    {% if order.status == 'Completed' %}
+                    <span class="badge bg-success">Zrealizowane</span>
+                    {% elif order.status == 'Pending' %}
+                    <span class="badge bg-warning text-dark">Oczekujące</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Anulowane</span>
+                    {% endif %}
+                </td>
+                <td><strong>{{ order.total_price }} PLN</strong></td>
+                <td>
+                    <ul class="list-unstyled mb-0 small">
+                        {% for item in order.items.all %}
+                        <li>{{ item.quantity }}x {{ item.product.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Brak zamówień do wyświetlenia.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

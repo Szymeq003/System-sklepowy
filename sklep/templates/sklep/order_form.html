@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Złóż Zamówienie</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'order_list' %}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Powrót
+            </a>
+        </div>
+    </div>
+</div>
+
+<form method="post" class="needs-validation" novalidate id="orderForm">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Dane Zamówienia</h5>
+                </div>
+                <div class="card-body">
+                    {% for field in order_form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Produkty</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Produkt (Dostępność)</th>
+                                    <th width="120">Ilość</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{ formset.management_form }}
+                                {% for form in formset %}
+                                <tr class="item-form">
+                                    <td>
+                                        {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                        {% endfor %}
+                                        {{ form.product }}
+                                        {% for error in form.product.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ form.quantity }}
+                                        {% for error in form.quantity.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-lg btn-primary">
+                    <i class="bi bi-check2-circle"></i> Zapisz Zamówienie
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // Add bootstrap form-control class to all inputs
+    document.addEventListener("DOMContentLoaded", function () {
+        var inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(function (input) {
+            if (input.type !== 'hidden' && input.type !== 'checkbox' && !input.classList.contains('form-control') && !input.classList.contains('form-select')) {
+                if (input.tagName === 'SELECT') {
+                    input.classList.add('form-select');
+                } else {
+                    input.classList.add('form-control');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
